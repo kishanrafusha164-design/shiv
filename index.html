@@ -2,93 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Auto Daily Stock Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Entry Sheet</title>
 <style>
-  body {font-family: Arial; background: #f8f8f8; padding: 15px;}
-  h2 {text-align: center; margin-bottom: 10px;}
-  .box {background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-width: 900px; margin: auto;}
-  table {width: 100%; border-collapse: collapse;}
-  th, td {border: 1px solid #ddd; padding: 8px; text-align: center;}
-  th {background: #fff3cd;}
-  td[contenteditable="true"] {background: #f9f9f9;}
-  button {margin: 8px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; color: white;}
-  .copy {background: #007bff;}
-  .whatsapp {background: #25D366;}
-  .pdf {background: #28a745;}
-  .save {background: #ff9800;}
-  .note {text-align: center; margin-top: 10px; color: #555;}
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff4e3;
+    text-align: center;
+  }
+  table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    width: 90%;
+    background: #fcd9a8;
+  }
+  th, td {
+    border: 1px solid #c68b59;
+    padding: 8px;
+    text-align: center;
+  }
+  th {
+    background: #f7a45d;
+  }
+  .section {
+    background: #ffb75e;
+    font-weight: bold;
+    text-align: left;
+  }
+  input[type=number] {
+    width: 70px;
+    padding: 3px;
+    text-align: center;
+  }
+  .btn {
+    padding: 10px 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .pdf { background: #ffd966; }
+  .whatsapp { background: #b6d7a8; }
+  .save { background: #ffe599; }
 </style>
 </head>
 <body>
-<div class="box">
-  <h2>📅 Auto Daily Stock Sheet</h2>
 
-  <label>Select Date: <input type="date" id="selDate"></label>
-  
-  <table id="stockTable">
-    <thead>
-      <tr>
-        <th>Stock</th>
-        <th>Item Name</th>
-        <th>Auto</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td contenteditable="true">9</td><td contenteditable="true">લીટર</td><td contenteditable="true">10</td></tr>
-      <tr><td contenteditable="true">20</td><td contenteditable="true">તાજા</td><td contenteditable="true">10</td></tr>
-      <tr><td contenteditable="true">10</td><td contenteditable="true">છાસ</td><td contenteditable="true">8</td></tr>
-      <tr><td contenteditable="true">20</td><td contenteditable="true">ઠબુઢા</td><td contenteditable="true">50</td></tr>
-      <tr><td contenteditable="true">10</td><td contenteditable="true">દહી</td><td contenteditable="true">20</td></tr>
-      <tr><td contenteditable="true">2</td><td contenteditable="true">ખાટી છાસ</td><td contenteditable="true">5</td></tr>
-      <tr><td contenteditable="true">0</td><td contenteditable="true">માખણ</td><td contenteditable="true">0</td></tr>
-    </tbody>
-  </table>
+<h2>31/10/2025 — Stock Entry</h2>
 
-  <div style="text-align:center;">
-    <button class="save" onclick="saveData()">💾 Save</button>
-    <button class="copy" onclick="copyAll()">📋 Copy All</button>
-    <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
-    <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
-  </div>
+<table id="dataTable">
+  <tr><th>Product</th><th>P</th><th>I</th><th>C</th><th>Quality</th></tr>
 
-  <div class="note">📅 Loaded data for <span id="showDate"></span></div>
+  <tr class="section"><td colspan="5">250ML</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Coca Cola</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Maza</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Palpi Orange</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Charge</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Kinly Soda</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">600ML</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Kinly Soda</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">1 Liter</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Whoter</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">2.25 Liter</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Maza 125ML</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+</table>
+
+<div>
+  <button class="btn pdf" onclick="downloadPDF()">PDF Download</button>
+  <button class="btn whatsapp" onclick="shareWhatsApp()">WhatsApp Share</button>
+  <button class="btn save" onclick="saveData()">Save</button>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
-  const dateInput = document.getElementById('selDate');
-  const showDate = document.getElementById('showDate');
-  const today = new Date().toISOString().split('T')[0];
-  dateInput.value = today;
-  showDate.textContent = today;
-
-  dateInput.addEventListener('change', () => showDate.textContent = dateInput.value);
-
-  function collectData() {
-    let text = `Auto Daily Stock Sheet\nDate: ${dateInput.value}\n\nStock\tItem\tAuto\n------------------------\n`;
-    document.querySelectorAll('#stockTable tbody tr').forEach(row => {
-      let cols = [...row.querySelectorAll('td')].map(td => td.innerText.trim());
-      text += `${cols[0]}\t${cols[1]}\t${cols[2]}\n`;
-    });
-    return text;
-  }
-
-  function copyAll() {
-    const text = collectData();
-    navigator.clipboard.writeText(text).then(() => alert('✅ All data copied!'));
-  }
-
-  function shareWhatsApp() {
-    const text = collectData();
-    const number = "6351175874"; // your WhatsApp number
-    const encoded = encodeURIComponent(text);
-    const url = `https://wa.me/${number}?text=${encoded}`;
-    window.open(url, '_blank');
-  }
-
+  // Save data in browser
   function saveData() {
-    alert('✅ Data saved locally (edit directly in table).');
+    const inputs = document.querySelectorAll('input[type=number]');
+    const data = Array.from(inputs).map(i => i.value);
+    localStorage.setItem('stockData', JSON.stringify(data));
+    alert('Data Saved!');
+  }
+
+  // Load data
+  window.onload = function() {
+    const saved = JSON.parse(localStorage.getItem('stockData'));
+    if (saved) {
+      document.querySelectorAll('input[type=number]').forEach((i, idx) => i.value = saved[idx]);
+    }
+  };
+
+  // Share via WhatsApp
+  function shareWhatsApp() {
+    let msg = "📦 Stock Report (31/10/2025):\n";
+    document.querySelectorAll("tr").forEach(tr => {
+      const cells = tr.querySelectorAll("td");
+      if (cells.length > 0 && cells[0].innerText) {
+        const name = cells[0].innerText.trim();
+        const input = tr.querySelector("input");
+        if (input) msg += `${name}: ${input.value}\n`;
+      }
+    });
+    const url = "https://wa.me/?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
+  }
+
+  // PDF download
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Stock Report (31/10/2025)", 10, 10);
+    let y = 20;
+    document.querySelectorAll("tr").forEach(tr => {
+      const cells = tr.querySelectorAll("td");
+      if (cells.length > 0 && cells[0].innerText) {
+        const name = cells[0].innerText.trim();
+        const input = tr.querySelector("input");
+        if (input) {
+          doc.text(`${name}: ${input.value}`, 10, y);
+          y += 7;
+        }
+      }
+    });
+    doc.save("Stock_Report_31-10-2025.pdf");
   }
 </script>
+
 </body>
 </html>
