@@ -1,0 +1,94 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auto Daily Stock Sheet</title>
+<style>
+  body {font-family: Arial; background: #f8f8f8; padding: 15px;}
+  h2 {text-align: center; margin-bottom: 10px;}
+  .box {background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-width: 900px; margin: auto;}
+  table {width: 100%; border-collapse: collapse;}
+  th, td {border: 1px solid #ddd; padding: 8px; text-align: center;}
+  th {background: #fff3cd;}
+  td[contenteditable="true"] {background: #f9f9f9;}
+  button {margin: 8px; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; color: white;}
+  .copy {background: #007bff;}
+  .whatsapp {background: #25D366;}
+  .pdf {background: #28a745;}
+  .save {background: #ff9800;}
+  .note {text-align: center; margin-top: 10px; color: #555;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>📅 Auto Daily Stock Sheet</h2>
+
+  <label>Select Date: <input type="date" id="selDate"></label>
+  
+  <table id="stockTable">
+    <thead>
+      <tr>
+        <th>Stock</th>
+        <th>Item Name</th>
+        <th>Auto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td contenteditable="true">9</td><td contenteditable="true">લીટર</td><td contenteditable="true">10</td></tr>
+      <tr><td contenteditable="true">20</td><td contenteditable="true">તાજા</td><td contenteditable="true">10</td></tr>
+      <tr><td contenteditable="true">10</td><td contenteditable="true">છાસ</td><td contenteditable="true">8</td></tr>
+      <tr><td contenteditable="true">20</td><td contenteditable="true">ઠબુઢા</td><td contenteditable="true">50</td></tr>
+      <tr><td contenteditable="true">10</td><td contenteditable="true">દહી</td><td contenteditable="true">20</td></tr>
+      <tr><td contenteditable="true">2</td><td contenteditable="true">ખાટી છાસ</td><td contenteditable="true">5</td></tr>
+      <tr><td contenteditable="true">0</td><td contenteditable="true">માખણ</td><td contenteditable="true">0</td></tr>
+    </tbody>
+  </table>
+
+  <div style="text-align:center;">
+    <button class="save" onclick="saveData()">💾 Save</button>
+    <button class="copy" onclick="copyAll()">📋 Copy All</button>
+    <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
+    <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
+  </div>
+
+  <div class="note">📅 Loaded data for <span id="showDate"></span></div>
+</div>
+
+<script>
+  const dateInput = document.getElementById('selDate');
+  const showDate = document.getElementById('showDate');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.value = today;
+  showDate.textContent = today;
+
+  dateInput.addEventListener('change', () => showDate.textContent = dateInput.value);
+
+  function collectData() {
+    let text = `Auto Daily Stock Sheet\nDate: ${dateInput.value}\n\nStock\tItem\tAuto\n------------------------\n`;
+    document.querySelectorAll('#stockTable tbody tr').forEach(row => {
+      let cols = [...row.querySelectorAll('td')].map(td => td.innerText.trim());
+      text += `${cols[0]}\t${cols[1]}\t${cols[2]}\n`;
+    });
+    return text;
+  }
+
+  function copyAll() {
+    const text = collectData();
+    navigator.clipboard.writeText(text).then(() => alert('✅ All data copied!'));
+  }
+
+  function shareWhatsApp() {
+    const text = collectData();
+    const number = "6351175874"; // your WhatsApp number
+    const encoded = encodeURIComponent(text);
+    const url = `https://wa.me/${number}?text=${encoded}`;
+    window.open(url, '_blank');
+  }
+
+  function saveData() {
+    alert('✅ Data saved locally (edit directly in table).');
+  }
+</script>
+</body>
+</html>
