@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Entry Sheet</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff4e3;
+    text-align: center;
+  }
+  table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    width: 90%;
+    background: #fcd9a8;
+  }
+  th, td {
+    border: 1px solid #c68b59;
+    padding: 8px;
+    text-align: center;
+  }
+  th {
+    background: #f7a45d;
+  }
+  .section {
+    background: #ffb75e;
+    font-weight: bold;
+    text-align: left;
+  }
+  input[type=number] {
+    width: 70px;
+    padding: 3px;
+    text-align: center;
+  }
+  .btn {
+    padding: 10px 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .pdf { background: #ffd966; }
+  .whatsapp { background: #b6d7a8; }
+  .save { background: #ffe599; }
+</style>
+</head>
+<body>
+
+<h2>31/10/2025 — Stock Entry</h2>
+
+<table id="dataTable">
+  <tr><th>Product</th><th>P</th><th>I</th><th>C</th><th>Quality</th></tr>
+
+  <tr class="section"><td colspan="5">250ML</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Coca Cola</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Maza</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Palpi Orange</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Charge</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Kinly Soda</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">600ML</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Kinly Soda</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">1 Liter</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Whoter</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+
+  <tr class="section"><td colspan="5">2.25 Liter</td></tr>
+  <tr><td>Thum Up</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Sprite</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Fanta</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+  <tr><td>Maza 125ML</td><td colspan="3"></td><td><input type="number" value="0"></td></tr>
+</table>
+
+<div>
+  <button class="btn pdf" onclick="downloadPDF()">PDF Download</button>
+  <button class="btn whatsapp" onclick="shareWhatsApp()">WhatsApp Share</button>
+  <button class="btn save" onclick="saveData()">Save</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  // Save data in browser
+  function saveData() {
+    const inputs = document.querySelectorAll('input[type=number]');
+    const data = Array.from(inputs).map(i => i.value);
+    localStorage.setItem('stockData', JSON.stringify(data));
+    alert('Data Saved!');
+  }
+
+  // Load data
+  window.onload = function() {
+    const saved = JSON.parse(localStorage.getItem('stockData'));
+    if (saved) {
+      document.querySelectorAll('input[type=number]').forEach((i, idx) => i.value = saved[idx]);
+    }
+  };
+
+  // Share via WhatsApp
+  function shareWhatsApp() {
+    let msg = "📦 Stock Report (31/10/2025):\n";
+    document.querySelectorAll("tr").forEach(tr => {
+      const cells = tr.querySelectorAll("td");
+      if (cells.length > 0 && cells[0].innerText) {
+        const name = cells[0].innerText.trim();
+        const input = tr.querySelector("input");
+        if (input) msg += `${name}: ${input.value}\n`;
+      }
+    });
+    const url = "https://wa.me/?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
+  }
+
+  // PDF download
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Stock Report (31/10/2025)", 10, 10);
+    let y = 20;
+    document.querySelectorAll("tr").forEach(tr => {
+      const cells = tr.querySelectorAll("td");
+      if (cells.length > 0 && cells[0].innerText) {
+        const name = cells[0].innerText.trim();
+        const input = tr.querySelector("input");
+        if (input) {
+          doc.text(`${name}: ${input.value}`, 10, y);
+          y += 7;
+        }
+      }
+    });
+    doc.save("Stock_Report_31-10-2025.pdf");
+  }
+</script>
+
+</body>
+</html>
