@@ -1,90 +1,188 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
-<html lang="en">
+<html lang="gu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto Daily Stock Sheet</title>
 <style>
-  body { font-family: Arial; text-align: center; background: #f8f9fa; }
-  table { margin: 15px auto; border-collapse: collapse; width: 90%; background: white; border-radius: 10px; overflow: hidden; }
-  th, td { border: 1px solid #ddd; padding: 8px; font-size: 18px; }
-  th { background: #f4f4f4; }
-  input { width: 80px; text-align: center; font-size: 16px; }
-  button { margin: 5px; padding: 10px 15px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
-  .save { background: orange; color: white; }
-  .copy { background: dodgerblue; color: white; }
-  .whatsapp { background: #25D366; color: white; }
-  .pdf { background: #28a745; color: white; }
+  body {
+    font-family: "Noto Sans Gujarati", sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #eee;
+    padding: 10px;
+    text-align: center;
+  }
+  th {
+    background: #fff2cc;
+  }
+  input[type="number"], input[type="text"] {
+    width: 100%;
+    text-align: center;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 15px;
+  }
+  select, input[type="date"] {
+    padding: 6px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  .btns {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .save { background: orange; }
+  .copy { background: #007bff; }
+  .whatsapp { background: #25d366; }
+  .pdf { background: #28a745; }
+  .footer {
+    text-align: center;
+    margin-top: 10px;
+    color: gray;
+  }
 </style>
 </head>
 <body>
 
-<h2>📅 Auto Daily Stock Sheet</h2>
-<label>Select Date: <input type="date" id="datePicker"></label>
+<div class="container">
+  <h2>📅 Auto Daily Stock Sheet</h2>
 
-<table id="stockTable">
-  <thead>
-    <tr>
-      <th>Stock</th>
-      <th>Item Name</th>
-      <th>Auto</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td><input type="number" value="9"></td><td>લીટર</td><td><input type="number" value="10"></td></tr>
-    <tr><td><input type="number" value="20"></td><td>તાજા</td><td><input type="number" value="10"></td></tr>
-    <tr><td><input type="number" value="10"></td><td>છાસ</td><td><input type="number" value="8"></td></tr>
-    <tr><td><input type="number" value="20"></td><td>ઠબુઢા</td><td><input type="number" value="50"></td></tr>
-    <tr><td><input type="number" value="10"></td><td>દહી</td><td><input type="number" value="20"></td></tr>
-    <tr><td><input type="number" value="2"></td><td>ખાટી છાસ</td><td><input type="number" value="5"></td></tr>
-    <tr><td><input type="number" value="0"></td><td>માખણ</td><td><input type="number" value="0"></td></tr>
-  </tbody>
-</table>
+  <label for="date">Select Date:</label>
+  <input type="date" id="date">
 
-<div>
-  <button class="save" onclick="saveData()">💾 Save</button>
-  <button class="copy" onclick="copyAll()">📋 Copy All</button>
-  <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
-  <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
+  <table id="stockTable">
+    <thead>
+      <tr>
+        <th>Stock</th>
+        <th>Item Name</th>
+        <th>Auto</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td><input type="number" value="9"></td><td><input type="text" value="લીટર"></td><td><input type="number" value="10"></td></tr>
+      <tr><td><input type="number" value="20"></td><td><input type="text" value="તાજા"></td><td><input type="number" value="10"></td></tr>
+      <tr><td><input type="number" value="10"></td><td><input type="text" value="છાસ"></td><td><input type="number" value="8"></td></tr>
+      <tr><td><input type="number" value="20"></td><td><input type="text" value="કબુળા"></td><td><input type="number" value="50"></td></tr>
+      <tr><td><input type="number" value="10"></td><td><input type="text" value="દહી"></td><td><input type="number" value="20"></td></tr>
+      <tr><td><input type="number" value="2"></td><td><input type="text" value="ખાટી છાસ"></td><td><input type="number" value="5"></td></tr>
+      <tr><td><input type="number" value="0"></td><td><input type="text" value="માખણ"></td><td><input type="number" value="0"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="btns">
+    <button class="save" onclick="saveData()">💾 Save</button>
+    <button class="copy" onclick="copyAll()">📋 Copy All</button>
+    <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
+    <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
+  </div>
+
+  <div class="footer" id="footerText">Loaded data for - </div>
 </div>
 
-<p id="status"></p>
-
 <script>
-  const datePicker = document.getElementById('datePicker');
-  datePicker.valueAsDate = new Date();
+  const dateInput = document.getElementById('date');
+  const tbody = document.getElementById('tbody');
+  const footerText = document.getElementById('footerText');
 
-  function getTableData() {
-    let rows = document.querySelectorAll('#stockTable tbody tr');
-    let data = [];
-    rows.forEach(r => {
-      let stock = r.cells[0].querySelector('input').value;
-      let name = r.cells[1].innerText;
-      let auto = r.cells[2].querySelector('input').value;
-      data.push(`${name}: Stock=${stock}, Auto=${auto}`);
-    });
-    return data.join('\n');
+  // Set today’s date as default
+  const today = new Date().toISOString().slice(0,10);
+  dateInput.value = today;
+  footerText.textContent = "Loaded data for " + today;
+
+  function getKey() {
+    return 'stockData_' + dateInput.value;
   }
 
   function saveData() {
-    localStorage.setItem('stockData_' + datePicker.value, getTableData());
-    document.getElementById('status').innerText = "✅ Data saved for " + datePicker.value;
+    const rows = tbody.querySelectorAll('tr');
+    let data = [];
+    rows.forEach(tr => {
+      const inputs = tr.querySelectorAll('input');
+      data.push({
+        stock: inputs[0].value,
+        name: inputs[1].value,
+        auto: inputs[2].value
+      });
+    });
+    localStorage.setItem(getKey(), JSON.stringify(data));
+    alert("Saved successfully for " + dateInput.value);
   }
 
+  function loadData() {
+    const data = JSON.parse(localStorage.getItem(getKey()) || "null");
+    if (!data) return;
+    tbody.innerHTML = "";
+    data.forEach(row => {
+      tbody.innerHTML += `
+        <tr>
+          <td><input type="number" value="${row.stock}"></td>
+          <td><input type="text" value="${row.name}"></td>
+          <td><input type="number" value="${row.auto}"></td>
+        </tr>`;
+    });
+    footerText.textContent = "Loaded data for " + dateInput.value;
+  }
+
+  dateInput.addEventListener('change', loadData);
+
   function copyAll() {
-    navigator.clipboard.writeText(getTableData());
-    alert("✅ All data copied!");
+    const rows = tbody.querySelectorAll('tr');
+    let text = "Auto Daily Stock Sheet (" + dateInput.value + ")\n\n";
+    text += "Stock\tItem Name\tAuto\n";
+    rows.forEach(tr => {
+      const inputs = tr.querySelectorAll('input');
+      text += `${inputs[0].value}\t${inputs[1].value}\t${inputs[2].value}\n`;
+    });
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
   }
 
   function shareWhatsApp() {
-    let msg = encodeURIComponent("📦 Auto Daily Stock Sheet (" + datePicker.value + ")\n\n" + getTableData());
-    window.open("https://wa.me/?text=" + msg, "_blank");
+    const rows = tbody.querySelectorAll('tr');
+    let text = "Auto Daily Stock Sheet (" + dateInput.value + ")\n\n";
+    text += "Stock | Item Name | Auto\n";
+    rows.forEach(tr => {
+      const inputs = tr.querySelectorAll('input');
+      text += `${inputs[0].value} | ${inputs[1].value} | ${inputs[2].value}\n`;
+    });
+    const url = "https://wa.me/?text=" + encodeURIComponent(text);
+    window.open(url, "_blank");
   }
-
-  window.onload = () => {
-    let saved = localStorage.getItem('stockData_' + datePicker.value);
-    if (saved) document.getElementById('status').innerText = "📄 Loaded data for " + datePicker.value;
-  };
 </script>
 
 </body>
