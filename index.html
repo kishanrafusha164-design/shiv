@@ -4,147 +4,133 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto Daily Stock Sheet</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <style>
-  body { font-family: Arial; text-align: center; margin: 20px; background: #fafafa; }
-  table { margin: 10px auto; border-collapse: collapse; width: 90%; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  th { background-color: #fff4c2; }
-  input[type=number], input[type=text] { width: 80px; text-align: center; }
-  button { margin: 8px; padding: 8px 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
-  #saveBtn { background-color: orange; }
-  #copyBtn { background-color: dodgerblue; }
-  #shareBtn { background-color: green; }
-  #pdfBtn { background-color: #555; }
-  #status { font-weight: bold; color: #444; margin-top: 10px; }
+  body {
+    font-family: 'Noto Sans Gujarati', sans-serif;
+    background: #f3f4f6;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 95%;
+    max-width: 420px;
+    text-align: center;
+  }
+  h1 { font-size: 22px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px; }
+  th { background: #f9fafb; }
+  input { width: 100%; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 6px; }
+  button { padding: 10px 15px; border: none; border-radius: 6px; color: white; margin: 5px; cursor: pointer; font-weight: bold; }
+  .save { background: #f59e0b; }
+  .load { background: #3b82f6; }
+  .whatsapp { background: #16a34a; }
+  .pdf { background: #4b5563; }
+  .info { margin-top: 10px; color: #374151; font-size: 14px; }
 </style>
 </head>
 <body>
+<div class="card">
+  <h1>📦 Auto Daily Stock Sheet</h1>
 
-<h2>📅 Auto Daily Stock Sheet</h2>
+  <label>Select Date:
+    <input type="date" id="dateInput">
+  </label>
 
-<label>Select Date:</label>
-<input type="date" id="dateInput"><br><br>
+  <table>
+    <tr><th>Stock</th><th>Item</th><th>Auto</th></tr>
+    <tbody id="stockTable">
+      <tr><td><input type="number" value="0"></td><td>લીટર</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>તાજા</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>છાસ</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>ઠબુડા</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>દહી</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>ખાટી છાસ</td><td><input type="number" value="0"></td></tr>
+      <tr><td><input type="number" value="0"></td><td>માખણ</td><td><input type="number" value="0"></td></tr>
+    </tbody>
+  </table>
 
-<table id="stockTable">
-  <tr><th>Stock</th><th>Item Name</th><th>Auto</th></tr>
-  <tr><td><input type="number" value="9"></td><td>લીટર</td><td><input type="number" value="10"></td></tr>
-  <tr><td><input type="number" value="20"></td><td>તાજા</td><td><input type="number" value="10"></td></tr>
-  <tr><td><input type="number" value="10"></td><td>છાસ</td><td><input type="number" value="8"></td></tr>
-  <tr><td><input type="number" value="20"></td><td>ઠબુડા</td><td><input type="number" value="50"></td></tr>
-  <tr><td><input type="number" value="10"></td><td>દહી</td><td><input type="number" value="20"></td></tr>
-  <tr><td><input type="number" value="2"></td><td>ખાટી છાસ</td><td><input type="number" value="5"></td></tr>
-  <tr><td><input type="number" value="0"></td><td>માખણ</td><td><input type="number" value="0"></td></tr>
-</table>
+  <button class="save" onclick="saveData()">💾 Save</button>
+  <button class="load" onclick="loadData()">📂 Load</button><br>
+  <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
+  <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
 
-<button id="saveBtn" onclick="saveData()">💾 Save</button>
-<button id="copyBtn" onclick="copyAll()">📋 Copy All</button>
-<button id="shareBtn" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
-<button id="pdfBtn" onclick="generatePDF()">🖨️ PDF / Print</button>
+  <div class="info" id="infoText">ℹ️ Firebase Connected</div>
+</div>
 
-<p id="status"></p>
-
-<script type="module">
-  // Firebase setup
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+<script>
+  // 🔥 Firebase Config -- નીચે તમારું સાચું Firebase Config મૂકો
   const firebaseConfig = {
-    databaseURL: "https://sheet-787b2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-  // Auto load when date selected
-  document.getElementById("dateInput").addEventListener("change", loadData);
+  document.getElementById("dateInput").valueAsDate = new Date();
 
-  async function loadData() {
-    const date = document.getElementById("dateInput").value;
-    if (!date) return;
-    document.getElementById("status").innerText = "⏳ Loading data...";
-    try {
-      const snapshot = await get(child(ref(db), "stocks/" + date));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const rows = document.querySelectorAll("#stockTable tr");
-        data.forEach((item, i) => {
-          if (i + 1 < rows.length) {
-            rows[i + 1].children[0].children[0].value = item.stock;
-            rows[i + 1].children[2].children[0].value = item.auto;
-          }
-        });
-        document.getElementById("status").innerText = `✅ Loaded data for ${date}`;
-      } else {
-        document.getElementById("status").innerText = "ℹ️ No data found, you can enter new values.";
-      }
-    } catch (err) {
-      document.getElementById("status").innerText = "❌ Error loading data!";
-      console.error(err);
-    }
-  }
-
-  // Save data to Firebase
-  window.saveData = async function() {
-    const date = document.getElementById("dateInput").value;
-    if (!date) return alert("પહેલાં તારીખ પસંદ કરો!");
-
+  function getTableData() {
     const rows = document.querySelectorAll("#stockTable tr");
     const data = [];
-    rows.forEach((r, i) => {
-      if (i === 0) return;
-      const stock = r.children[0].children[0].value;
-      const name = r.children[1].innerText;
-      const auto = r.children[2].children[0].value;
-      data.push({ stock, name, auto });
+    rows.forEach(r => {
+      const stock = r.children[0].querySelector("input").value || "0";
+      const item = r.children[1].textContent.trim();
+      const auto = r.children[2].querySelector("input").value || "0";
+      data.push({ item, stock, auto });
     });
+    return data;
+  }
 
-    await set(ref(db, "stocks/" + date), data);
-    document.getElementById("status").innerText = `✅ Saved data for ${date}`;
-  };
-
-  // Copy all data
-  window.copyAll = function() {
-    let text = "📋 Auto Daily Stock Sheet\n\n";
-    const rows = document.querySelectorAll("#stockTable tr");
-    rows.forEach((r, i) => {
-      if (i === 0) return;
-      const stock = r.children[0].children[0].value;
-      const name = r.children[1].innerText;
-      const auto = r.children[2].children[0].value;
-      text += `${name}: ${stock} / ${auto}\n`;
-    });
-    navigator.clipboard.writeText(text);
-    alert("✅ Data copied!");
-  };
-
-  // Share via WhatsApp
-  window.shareWhatsApp = function() {
-    let msg = "📦 *Auto Daily Stock Sheet*\n";
+  function saveData() {
     const date = document.getElementById("dateInput").value;
-    msg += `📅 Date: ${date}\n\n`;
-    const rows = document.querySelectorAll("#stockTable tr");
-    rows.forEach((r, i) => {
-      if (i === 0) return;
-      const name = r.children[1].innerText;
-      const auto = r.children[2].children[0].value;
-      msg += `• ${name}: ${auto}\n`;
-    });
-    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-  };
+    const data = getTableData();
+    firebase.database().ref("stock/" + date).set(data)
+      .then(() => document.getElementById("infoText").textContent = "✅ Data Saved Successfully!")
+      .catch(err => alert(err.message));
+  }
 
-  // Generate PDF / Print
-  window.generatePDF = function() {
+  function loadData() {
     const date = document.getElementById("dateInput").value;
-    const printContent = document.getElementById("stockTable").outerHTML;
-    const w = window.open();
-    w.document.write(`<html><head><title>PDF - ${date}</title></head><body>`);
-    w.document.write(`<h2>Auto Daily Stock Sheet (${date})</h2>`);
-    w.document.write(printContent);
-    w.document.write("</body></html>");
-    w.print();
-    w.close();
-  };
+    firebase.database().ref("stock/" + date).once("value")
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const rows = document.querySelectorAll("#stockTable tr");
+          data.forEach((d, i) => {
+            rows[i].children[0].querySelector("input").value = d.stock;
+            rows[i].children[2].querySelector("input").value = d.auto;
+          });
+          document.getElementById("infoText").textContent = "📂 Data Loaded Successfully!";
+        } else {
+          document.getElementById("infoText").textContent = "❌ No data found, enter new values.";
+        }
+      });
+  }
+
+  function shareWhatsApp() {
+    const date = document.getElementById("dateInput").value;
+    const data = getTableData()
+      .map(d => `${d.stock} | ${d.item} | ${d.auto}`)
+      .join("\n");
+    const text = encodeURIComponent(`📋 Auto Daily Stock Sheet - ${date}\nStock | Item Name | Auto\n${data}`);
+    window.open("https://wa.me/?text=" + text, "_blank");
+  }
 </script>
-
 </body>
 </html>
