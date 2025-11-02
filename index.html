@@ -5,184 +5,145 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto Daily Stock Sheet</title>
 <style>
-  body {
-    font-family: "Noto Sans Gujarati", sans-serif;
-    background: #f4f4f4;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  .container {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding: 20px;
-    max-width: 600px;
-    width: 100%;
-  }
-  h2 {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  th, td {
-    border: 1px solid #eee;
-    padding: 10px;
-    text-align: center;
-  }
-  th {
-    background: #fff2cc;
-  }
-  input[type="number"], input[type="text"] {
-    width: 100%;
-    text-align: center;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 15px;
-  }
-  select, input[type="date"] {
-    padding: 6px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  .btns {
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .save { background: orange; }
-  .copy { background: #007bff; }
-  .whatsapp { background: #25d366; }
-  .pdf { background: #28a745; }
-  .footer {
-    text-align: center;
-    margin-top: 10px;
-    color: gray;
-  }
+  body { font-family: Arial; text-align: center; margin: 20px; background: #fafafa; }
+  table { margin: 10px auto; border-collapse: collapse; width: 90%; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background-color: #fff4c2; }
+  input[type=number], input[type=text] { width: 80px; text-align: center; }
+  button { margin: 8px; padding: 8px 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
+  #saveBtn { background-color: orange; }
+  #copyBtn { background-color: dodgerblue; }
+  #shareBtn { background-color: green; }
+  #pdfBtn { background-color: #555; }
+  #status { font-weight: bold; color: #444; margin-top: 10px; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>📅 Auto Daily Stock Sheet</h2>
+<h2>📅 Auto Daily Stock Sheet</h2>
 
-  <label for="date">Select Date:</label>
-  <input type="date" id="date">
+<label>Select Date:</label>
+<input type="date" id="dateInput"><br><br>
 
-  <table id="stockTable">
-    <thead>
-      <tr>
-        <th>Stock</th>
-        <th>Item Name</th>
-        <th>Auto</th>
-      </tr>
-    </thead>
-    <tbody id="tbody">
-      <tr><td><input type="number" value="9"></td><td><input type="text" value="લીટર"></td><td><input type="number" value="10"></td></tr>
-      <tr><td><input type="number" value="20"></td><td><input type="text" value="તાજા"></td><td><input type="number" value="10"></td></tr>
-      <tr><td><input type="number" value="10"></td><td><input type="text" value="છાસ"></td><td><input type="number" value="8"></td></tr>
-      <tr><td><input type="number" value="20"></td><td><input type="text" value="કબુળા"></td><td><input type="number" value="50"></td></tr>
-      <tr><td><input type="number" value="10"></td><td><input type="text" value="દહી"></td><td><input type="number" value="20"></td></tr>
-      <tr><td><input type="number" value="2"></td><td><input type="text" value="ખાટી છાસ"></td><td><input type="number" value="5"></td></tr>
-      <tr><td><input type="number" value="0"></td><td><input type="text" value="માખણ"></td><td><input type="number" value="0"></td></tr>
-    </tbody>
-  </table>
+<table id="stockTable">
+  <tr><th>Stock</th><th>Item Name</th><th>Auto</th></tr>
+  <tr><td><input type="number" value="9"></td><td>લીટર</td><td><input type="number" value="10"></td></tr>
+  <tr><td><input type="number" value="20"></td><td>તાજા</td><td><input type="number" value="10"></td></tr>
+  <tr><td><input type="number" value="10"></td><td>છાસ</td><td><input type="number" value="8"></td></tr>
+  <tr><td><input type="number" value="20"></td><td>ઠબુડા</td><td><input type="number" value="50"></td></tr>
+  <tr><td><input type="number" value="10"></td><td>દહી</td><td><input type="number" value="20"></td></tr>
+  <tr><td><input type="number" value="2"></td><td>ખાટી છાસ</td><td><input type="number" value="5"></td></tr>
+  <tr><td><input type="number" value="0"></td><td>માખણ</td><td><input type="number" value="0"></td></tr>
+</table>
 
-  <div class="btns">
-    <button class="save" onclick="saveData()">💾 Save</button>
-    <button class="copy" onclick="copyAll()">📋 Copy All</button>
-    <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
-    <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
-  </div>
+<button id="saveBtn" onclick="saveData()">💾 Save</button>
+<button id="copyBtn" onclick="copyAll()">📋 Copy All</button>
+<button id="shareBtn" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
+<button id="pdfBtn" onclick="generatePDF()">🖨️ PDF / Print</button>
 
-  <div class="footer" id="footerText">Loaded data for - </div>
-</div>
+<p id="status"></p>
 
-<script>
-  const dateInput = document.getElementById('date');
-  const tbody = document.getElementById('tbody');
-  const footerText = document.getElementById('footerText');
+<script type="module">
+  // Firebase setup
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // Set today’s date as default
-  const today = new Date().toISOString().slice(0,10);
-  dateInput.value = today;
-  footerText.textContent = "Loaded data for " + today;
+  const firebaseConfig = {
+    databaseURL: "https://sheet-787b2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+  };
 
-  function getKey() {
-    return 'stockData_' + dateInput.value;
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Auto load when date selected
+  document.getElementById("dateInput").addEventListener("change", loadData);
+
+  async function loadData() {
+    const date = document.getElementById("dateInput").value;
+    if (!date) return;
+    document.getElementById("status").innerText = "⏳ Loading data...";
+    try {
+      const snapshot = await get(child(ref(db), "stocks/" + date));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const rows = document.querySelectorAll("#stockTable tr");
+        data.forEach((item, i) => {
+          if (i + 1 < rows.length) {
+            rows[i + 1].children[0].children[0].value = item.stock;
+            rows[i + 1].children[2].children[0].value = item.auto;
+          }
+        });
+        document.getElementById("status").innerText = `✅ Loaded data for ${date}`;
+      } else {
+        document.getElementById("status").innerText = "ℹ️ No data found, you can enter new values.";
+      }
+    } catch (err) {
+      document.getElementById("status").innerText = "❌ Error loading data!";
+      console.error(err);
+    }
   }
 
-  function saveData() {
-    const rows = tbody.querySelectorAll('tr');
-    let data = [];
-    rows.forEach(tr => {
-      const inputs = tr.querySelectorAll('input');
-      data.push({
-        stock: inputs[0].value,
-        name: inputs[1].value,
-        auto: inputs[2].value
-      });
+  // Save data to Firebase
+  window.saveData = async function() {
+    const date = document.getElementById("dateInput").value;
+    if (!date) return alert("પહેલાં તારીખ પસંદ કરો!");
+
+    const rows = document.querySelectorAll("#stockTable tr");
+    const data = [];
+    rows.forEach((r, i) => {
+      if (i === 0) return;
+      const stock = r.children[0].children[0].value;
+      const name = r.children[1].innerText;
+      const auto = r.children[2].children[0].value;
+      data.push({ stock, name, auto });
     });
-    localStorage.setItem(getKey(), JSON.stringify(data));
-    alert("Saved successfully for " + dateInput.value);
-  }
 
-  function loadData() {
-    const data = JSON.parse(localStorage.getItem(getKey()) || "null");
-    if (!data) return;
-    tbody.innerHTML = "";
-    data.forEach(row => {
-      tbody.innerHTML += `
-        <tr>
-          <td><input type="number" value="${row.stock}"></td>
-          <td><input type="text" value="${row.name}"></td>
-          <td><input type="number" value="${row.auto}"></td>
-        </tr>`;
-    });
-    footerText.textContent = "Loaded data for " + dateInput.value;
-  }
+    await set(ref(db, "stocks/" + date), data);
+    document.getElementById("status").innerText = `✅ Saved data for ${date}`;
+  };
 
-  dateInput.addEventListener('change', loadData);
-
-  function copyAll() {
-    const rows = tbody.querySelectorAll('tr');
-    let text = "Auto Daily Stock Sheet (" + dateInput.value + ")\n\n";
-    text += "Stock\tItem Name\tAuto\n";
-    rows.forEach(tr => {
-      const inputs = tr.querySelectorAll('input');
-      text += `${inputs[0].value}\t${inputs[1].value}\t${inputs[2].value}\n`;
+  // Copy all data
+  window.copyAll = function() {
+    let text = "📋 Auto Daily Stock Sheet\n\n";
+    const rows = document.querySelectorAll("#stockTable tr");
+    rows.forEach((r, i) => {
+      if (i === 0) return;
+      const stock = r.children[0].children[0].value;
+      const name = r.children[1].innerText;
+      const auto = r.children[2].children[0].value;
+      text += `${name}: ${stock} / ${auto}\n`;
     });
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
-  }
+    alert("✅ Data copied!");
+  };
 
-  function shareWhatsApp() {
-    const rows = tbody.querySelectorAll('tr');
-    let text = "Auto Daily Stock Sheet (" + dateInput.value + ")\n\n";
-    text += "Stock | Item Name | Auto\n";
-    rows.forEach(tr => {
-      const inputs = tr.querySelectorAll('input');
-      text += `${inputs[0].value} | ${inputs[1].value} | ${inputs[2].value}\n`;
+  // Share via WhatsApp
+  window.shareWhatsApp = function() {
+    let msg = "📦 *Auto Daily Stock Sheet*\n";
+    const date = document.getElementById("dateInput").value;
+    msg += `📅 Date: ${date}\n\n`;
+    const rows = document.querySelectorAll("#stockTable tr");
+    rows.forEach((r, i) => {
+      if (i === 0) return;
+      const name = r.children[1].innerText;
+      const auto = r.children[2].children[0].value;
+      msg += `• ${name}: ${auto}\n`;
     });
-    const url = "https://wa.me/?text=" + encodeURIComponent(text);
-    window.open(url, "_blank");
-  }
+    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+  };
+
+  // Generate PDF / Print
+  window.generatePDF = function() {
+    const date = document.getElementById("dateInput").value;
+    const printContent = document.getElementById("stockTable").outerHTML;
+    const w = window.open();
+    w.document.write(`<html><head><title>PDF - ${date}</title></head><body>`);
+    w.document.write(`<h2>Auto Daily Stock Sheet (${date})</h2>`);
+    w.document.write(printContent);
+    w.document.write("</body></html>");
+    w.print();
+    w.close();
+  };
 </script>
 
 </body>
