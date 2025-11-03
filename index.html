@@ -4,133 +4,175 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto Daily Stock Sheet</title>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 <style>
   body {
-    font-family: 'Noto Sans Gujarati', sans-serif;
+    font-family: Arial, sans-serif;
     background: #f3f4f6;
+    text-align: center;
     padding: 20px;
-    display: flex;
-    justify-content: center;
   }
   .card {
     background: white;
-    border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: inline-block;
     width: 95%;
     max-width: 420px;
+  }
+  h2 { margin-bottom: 5px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
     text-align: center;
   }
-  h1 { font-size: 22px; margin-bottom: 10px; }
-  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-  th, td { border: 1px solid #ddd; padding: 8px; }
-  th { background: #f9fafb; }
-  input { width: 100%; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 6px; }
-  button { padding: 10px 15px; border: none; border-radius: 6px; color: white; margin: 5px; cursor: pointer; font-weight: bold; }
-  .save { background: #f59e0b; }
-  .load { background: #3b82f6; }
-  .whatsapp { background: #16a34a; }
-  .pdf { background: #4b5563; }
-  .info { margin-top: 10px; color: #374151; font-size: 14px; }
+  input {
+    width: 90%;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #bbb;
+    text-align: center;
+  }
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    margin: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #saveBtn { background: #f59e0b; color: white; }
+  #loadBtn { background: #3b82f6; color: white; }
+  #whatsappBtn { background: #25D366; color: white; }
+  #searchBar {
+    width: 90%;
+    padding: 8px;
+    margin-top: 10px;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
 </style>
 </head>
 <body>
+
 <div class="card">
-  <h1>📦 Auto Daily Stock Sheet</h1>
+  <h2>📦 Auto Daily Stock Sheet</h2>
+  <label>તારીખ પસંદ કરો:</label><br>
+  <input type="date" id="date"><br>
+  <input type="text" id="searchBar" placeholder="🔍 વસ્તુ શોધો...">
 
-  <label>Select Date:
-    <input type="date" id="dateInput">
-  </label>
-
-  <table>
+  <table id="stockTable">
     <tr><th>Stock</th><th>Item</th><th>Auto</th></tr>
-    <tbody id="stockTable">
-      <tr><td><input type="number" value="0"></td><td>લીટર</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>તાજા</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>છાસ</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>ઠબુડા</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>દહી</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>ખાટી છાસ</td><td><input type="number" value="0"></td></tr>
-      <tr><td><input type="number" value="0"></td><td>માખણ</td><td><input type="number" value="0"></td></tr>
-    </tbody>
+    <tr><td><input type="number"></td><td>લીટર</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>તાજા</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>છાસ</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>કબુળા</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>દહી</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>ખાટી છાસ</td><td><input type="number"></td></tr>
+    <tr><td><input type="number"></td><td>માખણ</td><td><input type="number"></td></tr>
   </table>
 
-  <button class="save" onclick="saveData()">💾 Save</button>
-  <button class="load" onclick="loadData()">📂 Load</button><br>
-  <button class="whatsapp" onclick="shareWhatsApp()">💬 Share WhatsApp</button>
-  <button class="pdf" onclick="window.print()">🖨️ PDF / Print</button>
-
-  <div class="info" id="infoText">ℹ️ Firebase Connected</div>
+  <button id="saveBtn" onclick="saveData()">💾 Save</button>
+  <button id="loadBtn" onclick="loadData()">📂 Load</button>
+  <button id="whatsappBtn" onclick="shareWhatsApp()">🟢 WhatsApp</button>
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-  // 🔥 Firebase Config -- નીચે તમારું સાચું Firebase Config મૂકો
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
+const firebaseConfig = {
+  databaseURL: "https://sheet-787b2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+firebase.initializeApp(firebaseConfig);
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+// 📅 Auto-select today's date
+window.onload = () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById("date").value = today;
+};
 
-  document.getElementById("dateInput").valueAsDate = new Date();
+// 🔍 Search filter
+document.getElementById("searchBar").addEventListener("keyup", function() {
+  const filter = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#stockTable tr");
+  rows.forEach((row, index) => {
+    if (index === 0) return;
+    const item = row.querySelector("td:nth-child(2)").innerText.toLowerCase();
+    row.style.display = item.includes(filter) ? "" : "none";
+  });
+});
 
-  function getTableData() {
+// 💾 Save data to Firebase
+function saveData() {
+  const date = document.getElementById("date").value;
+  if (!date) return alert("કૃપા કરીને તારીખ પસંદ કરો!");
+
+  const rows = document.querySelectorAll("#stockTable tr");
+  const data = [];
+  rows.forEach((row, i) => {
+    if (i === 0) return;
+    const name = row.querySelector("td:nth-child(2)").innerText.trim();
+    const inputs = row.querySelectorAll("input");
+    const stock = inputs[0].value || "0";
+    const auto = inputs[1].value || "0";
+    data.push({ name, stock, auto });
+  });
+
+  firebase.database().ref("stockData/" + date).set(data);
+  alert("✅ ડેટા સાચવાયો!");
+}
+
+// 📂 Load data from Firebase
+function loadData() {
+  const date = document.getElementById("date").value;
+  if (!date) return alert("તારીખ પસંદ કરો!");
+
+  firebase.database().ref("stockData/" + date).once("value").then(snapshot => {
+    const data = snapshot.val();
+    if (!data) return alert("❌ આ તારીખ માટે કોઈ ડેટા નથી!");
     const rows = document.querySelectorAll("#stockTable tr");
-    const data = [];
-    rows.forEach(r => {
-      const stock = r.children[0].querySelector("input").value || "0";
-      const item = r.children[1].textContent.trim();
-      const auto = r.children[2].querySelector("input").value || "0";
-      data.push({ item, stock, auto });
+    data.forEach((item, i) => {
+      const inputs = rows[i + 1].querySelectorAll("input");
+      inputs[0].value = item.stock;
+      inputs[1].value = item.auto;
     });
-    return data;
-  }
+    alert("📂 ડેટા લોડ થયો!");
+  });
+}
 
-  function saveData() {
-    const date = document.getElementById("dateInput").value;
-    const data = getTableData();
-    firebase.database().ref("stock/" + date).set(data)
-      .then(() => document.getElementById("infoText").textContent = "✅ Data Saved Successfully!")
-      .catch(err => alert(err.message));
-  }
+// 🟢 WhatsApp share
+function shareWhatsApp() {
+  const date = document.getElementById("date").value || "N/A";
+  let message = `📦 *Auto Daily Stock Sheet* (${date})\n\n`;
+  message += `Stock | Item Name | Auto\n`;
+  message += `---------------------------\n`;
 
-  function loadData() {
-    const date = document.getElementById("dateInput").value;
-    firebase.database().ref("stock/" + date).once("value")
-      .then(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const rows = document.querySelectorAll("#stockTable tr");
-          data.forEach((d, i) => {
-            rows[i].children[0].querySelector("input").value = d.stock;
-            rows[i].children[2].querySelector("input").value = d.auto;
-          });
-          document.getElementById("infoText").textContent = "📂 Data Loaded Successfully!";
-        } else {
-          document.getElementById("infoText").textContent = "❌ No data found, enter new values.";
-        }
-      });
-  }
+  const rows = document.querySelectorAll("#stockTable tr");
+  let totalStock = 0, totalAuto = 0;
+  rows.forEach((row, i) => {
+    if (i === 0 || row.style.display === "none") return;
+    const name = row.querySelector("td:nth-child(2)").innerText.trim();
+    const inputs = row.querySelectorAll("input");
+    const stock = parseFloat(inputs[0].value) || 0;
+    const auto = parseFloat(inputs[1].value) || 0;
+    totalStock += stock;
+    totalAuto += auto;
+    message += `${stock} | ${name} | ${auto}\n`;
+  });
+  message += `---------------------------\n`;
+  message += `Total: ${totalStock} | કુલ | ${totalAuto}\n`;
 
-  function shareWhatsApp() {
-    const date = document.getElementById("dateInput").value;
-    const data = getTableData()
-      .map(d => `${d.stock} | ${d.item} | ${d.auto}`)
-      .join("\n");
-    const text = encodeURIComponent(`📋 Auto Daily Stock Sheet - ${date}\nStock | Item Name | Auto\n${data}`);
-    window.open("https://wa.me/?text=" + text, "_blank");
-  }
+  const url = "https://wa.me/?text=" + encodeURIComponent(message);
+  window.open(url, "_blank");
+}
 </script>
 </body>
 </html>
