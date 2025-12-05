@@ -176,3 +176,266 @@ function shareWhatsApp() {
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auto Daily Stock Sheet</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    text-align: center;
+    padding: 20px;
+  }
+  .card {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: inline-block;
+    width: 95%;
+    max-width: 520px;
+  }
+  .totals {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 6px 0 12px 0;
+  }
+  .total-box {
+    flex: 1;
+    background: #111827;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .total-box small { display:block; font-weight:400; font-size:12px; opacity:0.9; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #e6e6e6;
+    padding: 8px;
+  }
+  th {
+    background: #fafafa;
+    font-weight: bold;
+    text-align: center;
+  }
+  td { text-align: center; }
+  input[type="number"], input[type="text"], input[type="date"] {
+    width: 86%;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    margin: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #saveBtn { background: #f59e0b; color: #fff; }
+  #loadBtn { background: #3b82f6; color: #fff; }
+  #whatsappBtn { background: #25D366; color: #fff; }
+  #searchBar {
+    width: 92%;
+    padding: 8px;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  .meta-row { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+  @media (max-width:420px){
+    .totals { flex-direction: column; }
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+  <h2>📦 Auto Daily Stock Sheet</h2>
+
+  <div class="meta-row">
+    <div>
+      <label>તારીખ:</label><br>
+      <input type="date" id="date">
+    </div>
+
+    <div style="text-align:right;">
+      <input type="text" id="searchBar" placeholder="🔍 વસ્તુ શોધો...">
+    </div>
+  </div>
+
+  <!-- TOP TOTALS -->
+  <div class="totals">
+    <div class="total-box" id="totalStockBox">
+      <div style="font-size:20px" id="totalStock">0</div>
+      <small>સંપૂર્ણ Stock</small>
+    </div>
+    <div class="total-box" id="totalAutoBox">
+      <div style="font-size:20px" id="totalAuto">0</div>
+      <small>સંપૂર્ણ Auto</small>
+    </div>
+  </div>
+
+  <table id="stockTable">
+    <thead>
+      <tr>
+        <th>Stock</th>
+        <th>Item</th>
+        <th>Auto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><input type="number" min="0" step="any"></td><td>લીટર</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>તાજા</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>છાસ</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>ઠબુડા</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>દહી</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>ખાટી છાસ</td><td><input type="number" min="0" step="any"></td></tr>
+      <tr><td><input type="number" min="0" step="any"></td><td>માખણ</td><td><input type="number" min="0" step="any"></td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:10px; text-align:center;">
+    <button id="saveBtn" onclick="saveData()">💾 Save</button>
+    <button id="loadBtn" onclick="loadData()">📂 Load</button>
+    <button id="whatsappBtn" onclick="shareWhatsApp()">🟢 WhatsApp</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  databaseURL: "https://sheet-787b2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+firebase.initializeApp(firebaseConfig);
+
+// elements
+const dateEl = document.getElementById('date');
+const searchEl = document.getElementById('searchBar');
+const totalStockEl = document.getElementById('totalStock');
+const totalAutoEl = document.getElementById('totalAuto');
+const rowsSelector = () => Array.from(document.querySelectorAll('#stockTable tbody tr'));
+
+// set today's date
+window.onload = () => {
+  dateEl.value = new Date().toISOString().split('T')[0];
+  attachInputListeners();
+  updateTotals();
+};
+
+// attach listeners to inputs so totals update live
+function attachInputListeners(){
+  rowsSelector().forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    inputs.forEach(inp => {
+      inp.addEventListener('input', updateTotals);
+    });
+  });
+
+  searchEl.addEventListener('input', () => {
+    applyFilter();
+    updateTotals();
+  });
+
+  dateEl.addEventListener('change', updateTotals);
+}
+
+// filter rows by search query
+function applyFilter(){
+  const q = searchEl.value.trim().toLowerCase();
+  rowsSelector().forEach(row => {
+    const name = row.children[1].innerText.toLowerCase();
+    row.style.display = q === '' || name.includes(q) ? '' : 'none';
+  });
+}
+
+// compute totals only for visible rows
+function updateTotals(){
+  let totalStock = 0;
+  let totalAuto = 0;
+  rowsSelector().forEach(row => {
+    if (row.style.display === 'none') return;
+    const stockVal = parseFloat(row.children[0].querySelector('input').value) || 0;
+    const autoVal = parseFloat(row.children[2].querySelector('input').value) || 0;
+    totalStock += stockVal;
+    totalAuto += autoVal;
+  });
+  // format to remove .0 when integer
+  totalStockEl.innerText = Number.isInteger(totalStock) ? totalStock : totalStock.toFixed(2);
+  totalAutoEl.innerText = Number.isInteger(totalAuto) ? totalAuto : totalAuto.toFixed(2);
+}
+
+// SAVE data to Firebase
+function saveData(){
+  const date = dateEl.value;
+  if (!date) return alert('કૃપા કરીને તારીખ પસંદ કરો!');
+  const data = rowsSelector().map(row => {
+    const name = row.children[1].innerText.trim();
+    const stock = row.children[0].querySelector('input').value || '0';
+    const auto = row.children[2].querySelector('input').value || '0';
+    return { name, stock, auto };
+  });
+  firebase.database().ref('stockData/' + date).set(data)
+    .then(()=>{ alert('✅ ડેટા સાચવાયો!'); })
+    .catch(err => { alert('Save failed: ' + err.message); });
+}
+
+// LOAD data from Firebase (preserves old data if any)
+function loadData(){
+  const date = dateEl.value;
+  if (!date) return alert('કૃપા કરીને તારીખ પસંદ કરો!');
+  firebase.database().ref('stockData/' + date).once('value')
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (!data) return alert('❌ આ તારીખ માટે ડેટા નથી!');
+      const rows = rowsSelector();
+      // map loaded data into existing rows (by order). If lengths differ, only fill available rows.
+      data.forEach((item, i) => {
+        if (!rows[i]) return;
+        rows[i].children[0].querySelector('input').value = item.stock;
+        rows[i].children[2].querySelector('input').value = item.auto;
+      });
+      updateTotals();
+      alert('📂 ડેટા લોડ થઈ ગયું!');
+    })
+    .catch(err => { alert('Load failed: ' + err.message); });
+}
+
+// WhatsApp share (includes totals)
+function shareWhatsApp(){
+  const date = dateEl.value || 'N/A';
+  let msg = `📦 Auto Daily Stock Sheet (${date})\n\n`;
+  msg += `Stock | Item | Auto\n`;
+  msg += `---------------------------\n`;
+  let ts = 0, ta = 0;
+  rowsSelector().forEach(row => {
+    if (row.style.display === 'none') return;
+    const stock = parseFloat(row.children[0].querySelector('input').value) || 0;
+    const item = row.children[1].innerText.trim();
+    const auto = parseFloat(row.children[2].querySelector('input').value) || 0;
+    ts += stock; ta += auto;
+    msg += `${stock} | ${item} | ${auto}\n`;
+  });
+  msg += `---------------------------\n`;
+  msg += `Total: ${ts} | કુલ | ${ta}\n`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+</script>
+
+</body>
+</html>
